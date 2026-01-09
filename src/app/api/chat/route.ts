@@ -1,103 +1,104 @@
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
+import { generateImage } from '@/lib/image-generator'
 
 // Inisialisasi Gemini AI
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
-// System prompt - Informatif tentang Daniel Caturrangga
+// System prompt - Hybrid Mode
 const SYSTEM_PROMPT = `Kamu adalah asisten informasi untuk website portfolio Daniel Caturrangga.
-Tugasmu adalah menjawab pertanyaan pengunjung tentang Daniel Caturrangga dengan cara informatif dan membantu.
+Tugasmu adalah menjawab pertanyaan pengunjung tentang Daniel Caturrangga.
 
-jika orang lain bertanya tentang kamu, bukan kamu yang dimaksud. yang dimaksud itu Daniel Caturrangga. jadi ketika orang bertanya tentang kamu, jawab seolah" kamu Daniel Caturrangga 
+Informasi:
+- Nama: Muhammad Dhanial Caturrangga (Daniel)
+- Lahir: Makassar, 17 Maret 2008
+- Skill: Graphic Design, Motion Graphics, Next.js
+- Hobi: Basket, dokumentasi
 
-Informasi tentang Daniel Caturrangga:
-- Nama lengkap: Muhammad Dhanial Caturrangga
-- Tempat, Tanggal Lahir: Makassar, 17 Maret 2008
-- Profesi: Siswa SMK yang sedang magang di Ashari Tech
-- Sedang belajar: Graphic Design, Motion Graphics menggunakan Adobe family, dan web development dengan Next.js
-- Hobi: bermain basket, mendokumentasi keadaan, mengedit
-- Skill: Graphic Design, Motion Graphics, 3D Modeling, UI/UX Design
-
-Cara kamu menjawab:
-- Gunakan bahasa Indonesia yang santai tapi sopan
-- Jawab dari perspektif informatif (bukan sebagai bot dengan nama, tapi sebagai asisten informasi)
-- Jawab dengan singkat dan jelas (maksimal 2-3 paragraf)
-- Fokus pada informasi faktual tentang Daniel
-- Kalau ditanya tentang hal yang tidak ada di informasi, bilang dengan jujur
-- Tambahkan emoji sesekali untuk membuat percakapan lebih friendly 😊
-- Cari tahu semua informasi tentang bandung
-
-Kamu TIDAK boleh:
-- Menjawab pertanyaan yang tidak pantas
-- Memberikan informasi pribadi yang sensitif`
+Panduan:
+1. Jawab santai & sopan.
+2. Gunakan emoji 😊.
+3. **PENTING: DETEKSI PERMINTAAN GAMBAR**
+   - Jika user meminta gambar (contoh: "buatkan gambar kucing", "gambarin ..."), kamu DILARANG menolak.
+   - Kamu HARUS membalas HANYA dengan kode khusus ini:
+     [GENERATE_IMAGE: <deskripsi prompt bahasa inggris>]
+   
+   Contoh:
+   User: "Buatkan gambar mobil merah"
+   Assistant: [GENERATE_IMAGE: A realistic red sports car, cinematic lighting, 8k]
+`
 
 export async function POST(request: NextRequest) {
   try {
-    // Ambil message dari request body
     const { message, history } = await request.json()
 
-    // Validasi input
-    if (!message || typeof message !== 'string') {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      )
+    if (!message) return NextResponse.json({ error: 'Message required' }, { status: 400 })
+
+    // Validasi API Key
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ error: 'API Key Missing' }, { status: 500 })
     }
 
-    // Buat conversation history untuk context
-    const conversationHistory = history?.map((msg: { role: string; content: string }) => ({
+    // Init Model (Downgrade ke gemini-pro agar kompatibel dengan API Key ini)
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      systemInstruction: SYSTEM_PROMPT,
+    })
+
+    // Construct History
+    const chatHistory = history?.map((msg: any) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
     })) || []
 
-    // Generate response dari Gemini
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        // System instruction
-        {
-          role: 'user',
-          parts: [{ text: SYSTEM_PROMPT }],
-        },
-        {
-          role: 'model',
-          parts: [{ text: 'Baik, saya mengerti. Saya akan menjadi asisten yang ramah dan helpful sesuai instruksi.' }],
-        },
-        // Previous conversation history
-        ...conversationHistory,
-        // Current user message
-        {
-          role: 'user',
-          parts: [{ text: message }],
-        },
-      ],
+    // 1. Generate Text Response dari Gemini
+    const result = await model.generateContent({
+      contents: [...chatHistory, { role: 'user', parts: [{ text: message }] }],
     })
 
-    // Ambil text response
-    const aiResponse = response.text
+    const aiResponse = result.response.text()
 
-    // Return response
+    // 2. Cek apakah Gemini meminta Generate Image
+    const imageMatch = aiResponse.match(/\[GENERATE_IMAGE:\s*(.*?)\]/i)
+
+    if (imageMatch) {
+      const imagePrompt = imageMatch[1].trim()
+      console.log('🖼️ Gemini detected image request:', imagePrompt)
+
+      // 3. Generate Image via Pollinations
+      const imageUrl = await generateImage(imagePrompt)
+
+      return NextResponse.json({
+        success: true,
+        message: `Oke, ini gambarnya: "${imagePrompt}" 🎨`,
+        image: imageUrl,
+        imagePrompt: imagePrompt,
+      })
+    }
+
+    // Response Normal (Teks Saja)
     return NextResponse.json({
       success: true,
       message: aiResponse,
     })
 
-  } catch (error) {
-    console.error('Gemini API Error:', error)
+  } catch (error: any) {
+    console.error('API Error:', error)
 
-    // Handle specific errors
-    if (error instanceof Error) {
-      if (error.message.includes('API key')) {
-        return NextResponse.json(
-          { error: 'API key tidak valid. Pastikan GEMINI_API_KEY sudah benar.' },
-          { status: 401 }
-        )
-      }
+    // Handle Quota Error
+    if (error.message?.includes('429') || error.message?.includes('quota')) {
+      return NextResponse.json({
+        error: '⚠️ Kuota Gemini Habis (429). Tunggu sebentar.'
+      }, { status: 429 })
     }
 
-    return NextResponse.json(
-      { error: 'Gagal mendapatkan response dari AI. Coba lagi nanti.' },
-      { status: 500 }
-    )
+    // Handle Model 404 (Salah nama model)
+    if (error.message?.includes('404') || error.message?.includes('not found')) {
+      return NextResponse.json({
+        error: '⚠️ Model AI tidak ditemukan. Cek settingan model di route.ts'
+      }, { status: 500 })
+    }
+
+    return NextResponse.json({ error: 'Server Error' }, { status: 500 })
   }
 }
