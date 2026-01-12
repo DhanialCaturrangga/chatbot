@@ -41,7 +41,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  
+
   // Gallery & Lightbox states
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [showGallery, setShowGallery] = useState(false)
@@ -71,7 +71,7 @@ export default function ChatWidget() {
       } else {
         setMessages(DEFAULT_MESSAGES)
       }
-      
+
       // Load gallery
       const storedGallery = localStorage.getItem(GALLERY_KEY)
       if (storedGallery) {
@@ -86,7 +86,7 @@ export default function ChatWidget() {
           console.error('Failed to parse gallery:', error)
         }
       }
-      
+
       setIsLoaded(true)
     }
   }, [])
@@ -143,46 +143,46 @@ export default function ChatWidget() {
   }
 
   // 5. Handle kirim pesan
- const handleSend = async () => {
-  if (!inputValue.trim() || isTyping) return
+  const handleSend = async () => {
+    if (!inputValue.trim() || isTyping) return
 
-  const userMessage = inputValue.trim()
-  setInputValue('')
+    const userMessage = inputValue.trim()
+    setInputValue('')
 
-  // Tambah pesan user
-  const userMsg: Message = {
-    id: Date.now(),
-    text: userMessage,
-    sender: 'user',
-    timestamp: new Date(),
-  }
-  setMessages((prev) => [...prev, userMsg])
-  setIsTyping(true)
-
-  try {
-    const aiResponse = await sendMessageToAI(userMessage)
-
-    // Tambah response AI (dengan atau tanpa gambar)
-    const botMsg: Message = {
-      id: Date.now() + 1,
-      text: aiResponse.message,
-      sender: 'bot',
-      timestamp: new Date(),
-      image: aiResponse.image || undefined,  // Simpan gambar jika ada
-    }
-    setMessages((prev) => [...prev, botMsg])
-  } catch (error) {
-    const errorMsg: Message = {
-      id: Date.now() + 1,
-      text: 'Maaf, terjadi kesalahan. Coba lagi ya!',
-      sender: 'bot',
+    // Tambah pesan user
+    const userMsg: Message = {
+      id: Date.now(),
+      text: userMessage,
+      sender: 'user',
       timestamp: new Date(),
     }
-    setMessages((prev) => [...prev, errorMsg])
-  } finally {
-    setIsTyping(false)
+    setMessages((prev) => [...prev, userMsg])
+    setIsTyping(true)
+
+    try {
+      const aiResponse = await sendMessageToAI(userMessage)
+
+      // Tambah response AI (dengan atau tanpa gambar)
+      const botMsg: Message = {
+        id: Date.now() + 1,
+        text: aiResponse.message,
+        sender: 'bot',
+        timestamp: new Date(),
+        image: aiResponse.image || undefined,  // Simpan gambar jika ada
+      }
+      setMessages((prev) => [...prev, botMsg])
+    } catch (error) {
+      const errorMsg: Message = {
+        id: Date.now() + 1,
+        text: 'Maaf, terjadi kesalahan. Coba lagi ya!',
+        sender: 'bot',
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMsg])
+    } finally {
+      setIsTyping(false)
+    }
   }
-}
 
   // 6. Handle clear chat
   const handleClearChat = () => {
@@ -256,11 +256,11 @@ export default function ChatWidget() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans antialiased">
-      
+
       {/* Chat Window */}
       {isOpen && (
         <div className="mb-4 w-[400px] h-[600px] bg-black rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-800 animate-in fade-in zoom-in duration-200 origin-bottom-right">
-          
+
           {/* Header - iOS iMessage Dark */}
           <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-between bg-gray-950">
             <div className="flex items-center gap-3">
@@ -280,17 +280,17 @@ export default function ChatWidget() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={handleClearChat} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-800" title="Clear chat">
+              <button onClick={handleClearChat} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-800 focus-visible:ring-2 focus-visible:ring-blue-500 outline-none" title="Clear chat" aria-label="Clear chat">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
               </button>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-800">
+              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-800 focus-visible:ring-2 focus-visible:ring-blue-500 outline-none" aria-label="Close chat">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
             </div>
           </div>
 
           {/* Messages Area */}
-          <div 
+          <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth bg-black"
           >
@@ -300,23 +300,26 @@ export default function ChatWidget() {
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[75%] ${
-                    msg.sender === 'user'
-                      ? 'bg-blue-500 text-white rounded-3xl rounded-br-none'
-                      : 'bg-gray-800 text-white rounded-3xl rounded-bl-none'
-                  } px-4 py-2`}
+                  className={`max-w-[75%] ${msg.sender === 'user'
+                    ? 'bg-blue-500 text-white rounded-3xl rounded-br-none'
+                    : 'bg-gray-800 text-white rounded-3xl rounded-bl-none'
+                    } px-4 py-2`}
                 >
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
 
                   {msg.image && (
                     <div className="mt-2">
-                      <img
-                        src={msg.image}
-                        alt="Generated image"
-                        className="rounded-2xl max-w-full cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setLightboxImage({ id: msg.id, url: msg.image!, prompt: msg.imagePrompt || '', timestamp: msg.timestamp })}
-                      />
-                      
+                      <div className="relative w-full aspect-square max-w-[512px]">
+                        <Image
+                          src={msg.image}
+                          alt="Generated AI Illustration"
+                          fill
+                          className="rounded-2xl object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setLightboxImage({ id: msg.id, url: msg.image!, prompt: msg.imagePrompt || '', timestamp: msg.timestamp })}
+                          sizes="(max-width: 768px) 100vw, 512px"
+                        />
+                      </div>
+
                       {/* Image Action Buttons - iOS Style */}
                       <div className="flex gap-1 mt-2 flex-wrap text-xs">
                         <button
@@ -397,7 +400,7 @@ export default function ChatWidget() {
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex justify-start">
                 <div className="bg-gray-800 px-4 py-2.5 rounded-3xl rounded-bl-none">
@@ -426,9 +429,10 @@ export default function ChatWidget() {
                 className="flex-1 px-4 py-2 text-sm bg-gray-900 text-white rounded-full border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 disabled:opacity-50"
               />
               {(inputValue.trim() && !isTyping) && (
-                <button 
+                <button
                   onClick={handleSend}
-                  className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
+                  className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 outline-none"
+                  aria-label="Send message"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -463,17 +467,23 @@ export default function ChatWidget() {
           >
             <button
               onClick={() => setLightboxImage(null)}
-              className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white rounded-full w-10 h-10 flex items-center justify-center"
+              className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white rounded-full w-10 h-10 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-blue-500 outline-none"
+              aria-label="Close lightbox"
             >
               ✕
             </button>
-            
-            <img
-              src={lightboxImage.url}
-              alt="Lightbox"
-              className="w-full h-auto rounded-t-3xl"
-            />
-            
+
+            <div className="relative w-full h-[60vh]">
+              <Image
+                src={lightboxImage.url}
+                alt={`Full view of ${lightboxImage.prompt}`}
+                fill
+                className="object-contain rounded-t-3xl"
+                sizes="100vw"
+                priority
+              />
+            </div>
+
             <div className="p-4 bg-gray-900 border-t border-gray-800 rounded-b-3xl">
               <p className="text-white text-sm mb-3">
                 <strong>Prompt:</strong> {lightboxImage.prompt}
@@ -517,7 +527,8 @@ export default function ChatWidget() {
               <h2 className="text-white font-bold">🎨 Image Gallery ({galleryImages.length})</h2>
               <button
                 onClick={() => setShowGallery(false)}
-                className="bg-gray-800 hover:bg-gray-700 text-white rounded-full w-10 h-10 flex items-center justify-center"
+                className="bg-gray-800 hover:bg-gray-700 text-white rounded-full w-10 h-10 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-blue-500 outline-none"
+                aria-label="Close gallery"
               >
                 ✕
               </button>
@@ -526,14 +537,16 @@ export default function ChatWidget() {
             <div className="p-3 grid grid-cols-2 gap-2 md:grid-cols-3 bg-black">
               {galleryImages.map((img) => (
                 <div key={img.id} className="bg-gray-800 rounded-2xl overflow-hidden relative group border border-gray-700">
-                  <img
+                  <Image
                     src={img.url}
-                    alt={img.prompt}
-                    className="w-full h-40 object-cover cursor-pointer hover:opacity-80 transition"
+                    alt={`Gallery: ${img.prompt}`}
+                    fill
+                    className="object-cover cursor-pointer hover:opacity-80 transition"
                     onClick={() => {
                       setLightboxImage(img)
                       setShowGallery(false)
                     }}
+                    sizes="(max-width: 768px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-xs gap-1.5">
                     <p className="text-center px-2 line-clamp-2 text-xs">{img.prompt}</p>
@@ -587,15 +600,15 @@ export default function ChatWidget() {
       <div className="relative w-14 h-14">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`absolute inset-0 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 active:scale-90 z-50 ${
-            isOpen ? 'bg-gray-700 hover:bg-gray-600' : 'bg-blue-500 hover:bg-blue-600 hover:scale-110'
-          }`}
+          className={`absolute inset-0 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 active:scale-90 z-50 focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-blue-500 outline-none ${isOpen ? 'bg-gray-700 hover:bg-gray-600' : 'bg-blue-500 hover:bg-blue-600 hover:scale-110'
+            }`}
+          aria-label={isOpen ? 'Close chat' : 'Open chat'}
         >
           {/* Icon Chat */}
           <div className={`absolute transition-all duration-300 ${isOpen ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
-             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" /></svg>
           </div>
-          
+
           {/* Icon X */}
           <div className={`absolute transition-all duration-300 ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
