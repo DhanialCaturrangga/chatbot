@@ -27,7 +27,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoaded(true);
-    }, 2500); // 2s animation + buffer
+    }, 1000); // Reduced for better performance
     return () => clearTimeout(timer);
   }, []);
 
@@ -111,7 +111,7 @@ export default function Home() {
             >
               <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative mb-4">
                 <div className="absolute inset-0 bg-[#E6FF00] transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-10 opacity-20"></div>
-                <Image src="/Daniel.jpg" alt="Screenshot of E-Commerce Platform Project" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                <Image src="/Daniel.jpg" alt="Screenshot of E-Commerce Platform Project" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" priority />
               </div>
               <h3 className="text-3xl font-bold">E-Commerce Platform</h3>
               <p className="text-sm mt-2 text-gray-900">Next.js / Development</p>

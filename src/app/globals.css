@@ -52,8 +52,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: slideUp 1s ease-in-out forwards 2s;
-  /* Disappear after 2s */
+  animation: slideUp 0.5s ease-in-out forwards 0.8s;
+  /* Disappear after 0.8s for better performance */
 }
 
 @keyframes slideUp {
