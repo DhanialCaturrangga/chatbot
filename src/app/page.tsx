@@ -72,7 +72,7 @@ export default function Home() {
       <main className="pt-32 px-6 sm:px-12 max-w-7xl mx-auto">
 
         <div className="min-h-[80vh] flex flex-col justify-center">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] mb-4 text-gray-700">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] mb-4 text-gray-900">
             Digital Creative Portfolio
           </p>
 
@@ -87,7 +87,7 @@ export default function Home() {
 
           <div className="text-2xl sm:text-4xl font-serif max-w-2xl leading-relaxed">
             <p>自由に、ユニークに。</p>
-            <p className="mt-2 text-xl sm:text-2xl text-gray-800 font-sans">
+            <p className="mt-2 text-xl sm:text-2xl text-gray-900 font-sans">
               We create digital experiences that bring joy. <br />
               Innovative, unique, and free-spirited.
             </p>
@@ -98,7 +98,7 @@ export default function Home() {
         <section className="py-24 border-t border-black">
           <div className="flex items-end justify-between mb-16">
             <h2 className="text-6xl font-bold tracking-tighter">WORKS</h2>
-            <span className="text-xl font-serif italic text-gray-800">Selected Projects 2024-2025</span>
+            <span className="text-xl font-serif italic text-gray-900">Selected Projects 2024-2025</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-24">
@@ -114,7 +114,7 @@ export default function Home() {
                 <Image src="/Daniel.jpg" alt="Screenshot of E-Commerce Platform Project" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
               </div>
               <h3 className="text-3xl font-bold">E-Commerce Platform</h3>
-              <p className="text-sm mt-2 text-gray-700">Next.js / Development</p>
+              <p className="text-sm mt-2 text-gray-900">Next.js / Development</p>
             </div>
 
             {/* Project 2 */}
@@ -128,7 +128,7 @@ export default function Home() {
                 <div className="w-full h-full flex items-center justify-center bg-black text-white text-4xl font-bold">PROJECT</div>
               </div>
               <h3 className="text-3xl font-bold">Brand Identity</h3>
-              <p className="text-sm mt-2 text-gray-700">Design / Branding</p>
+              <p className="text-sm mt-2 text-gray-900">Design / Branding</p>
             </div>
 
           </div>
