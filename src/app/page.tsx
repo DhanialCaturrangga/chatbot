@@ -1,8 +1,13 @@
 "use client";
 
+import dynamic from 'next/dynamic'
 import Image from "next/image";
-import ChatWidget from '@/components/ChatWidget'
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+
+// Lazy load ChatWidget for better initial performance
+const ChatWidget = dynamic(() => import('@/components/ChatWidget'), {
+  ssr: false,
+})
 
 export default function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -40,9 +45,9 @@ export default function Home() {
 
       {/* LOADER OVERLAY */}
       <div className="loader-overlay flex flex-col items-center justify-center pointer-events-none">
-        <h1 className="text-4xl font-bold tracking-tighter mix-blend-difference text-black">
+        <div className="text-4xl font-bold tracking-tighter mix-blend-difference text-black">
           JUNNI STYLE
-        </h1>
+        </div>
         <p className="mt-2 font-mono text-sm">LOADING EXPERIENCE...</p>
       </div>
 
@@ -67,9 +72,9 @@ export default function Home() {
       <main className="pt-32 px-6 sm:px-12 max-w-7xl mx-auto">
 
         <div className="min-h-[80vh] flex flex-col justify-center">
-          <h2 className="text-sm font-bold uppercase tracking-[0.2em] mb-4 text-gray-500">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] mb-4 text-gray-700">
             Digital Creative Portfolio
-          </h2>
+          </p>
 
           <h1
             className="text-[10vw] leading-[0.9] font-bold tracking-tighter mb-8 cursor-none"
@@ -82,7 +87,7 @@ export default function Home() {
 
           <div className="text-2xl sm:text-4xl font-serif max-w-2xl leading-relaxed">
             <p>自由に、ユニークに。</p>
-            <p className="mt-2 text-xl sm:text-2xl text-gray-600 font-sans">
+            <p className="mt-2 text-xl sm:text-2xl text-gray-800 font-sans">
               We create digital experiences that bring joy. <br />
               Innovative, unique, and free-spirited.
             </p>
@@ -92,8 +97,8 @@ export default function Home() {
         {/* PROJECTS SECTION */}
         <section className="py-24 border-t border-black">
           <div className="flex items-end justify-between mb-16">
-            <h3 className="text-6xl font-bold tracking-tighter">WORKS</h3>
-            <span className="text-xl font-serif italic">Selected Projects 2024-2025</span>
+            <h2 className="text-6xl font-bold tracking-tighter">WORKS</h2>
+            <span className="text-xl font-serif italic text-gray-800">Selected Projects 2024-2025</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-24">
@@ -108,8 +113,8 @@ export default function Home() {
                 <div className="absolute inset-0 bg-[#E6FF00] transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-10 opacity-20"></div>
                 <Image src="/Daniel.jpg" alt="Screenshot of E-Commerce Platform Project" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
               </div>
-              <h4 className="text-3xl font-bold">E-Commerce Platform</h4>
-              <p className="text-sm mt-2 text-gray-500">Next.js / Development</p>
+              <h3 className="text-3xl font-bold">E-Commerce Platform</h3>
+              <p className="text-sm mt-2 text-gray-700">Next.js / Development</p>
             </div>
 
             {/* Project 2 */}
@@ -122,8 +127,8 @@ export default function Home() {
                 <div className="absolute inset-0 bg-[#E6FF00] transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-10 opacity-20"></div>
                 <div className="w-full h-full flex items-center justify-center bg-black text-white text-4xl font-bold">PROJECT</div>
               </div>
-              <h4 className="text-3xl font-bold">Brand Identity</h4>
-              <p className="text-sm mt-2 text-gray-500">Design / Branding</p>
+              <h3 className="text-3xl font-bold">Brand Identity</h3>
+              <p className="text-sm mt-2 text-gray-700">Design / Branding</p>
             </div>
 
           </div>
@@ -138,7 +143,7 @@ export default function Home() {
             CONTACT
           </h2>
           <div className="text-right">
-            <p className="text-2xl mb-2">Let's work together</p>
+            <p className="text-2xl mb-2 text-white">Let's work together</p>
             <a href="mailto:hello@daniel.com" className="text-xl underline decoration-[#E6FF00]">hello@daniel.com</a>
           </div>
         </div>
