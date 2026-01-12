@@ -139,7 +139,7 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="bg-black text-[#E6FF00] py-24 px-6 sm:px-12">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end">
-          <h2 className="text-[12vw] leading-none font-bold tracking-tighter mb-8 md:mb-0">
+          <h2 className="text-[12vw] leading-none font-bold tracking-tighter mb-8 md:mb-0 text-white">
             CONTACT
           </h2>
           <div className="text-right">
