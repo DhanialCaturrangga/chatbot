@@ -77,7 +77,7 @@ export default function Home() {
             onMouseLeave={() => setIsHovering(false)}
           >
             WE MAKE <br />
-            <span className="text-transparent" style={{ webkitTextStroke: '2px black' }}>HAPPY</span> THINGS.
+            <span className="text-transparent" style={{ WebkitTextStroke: '2px black' }}>HAPPY</span> THINGS.
           </h1>
 
           <div className="text-2xl sm:text-4xl font-serif max-w-2xl leading-relaxed">
