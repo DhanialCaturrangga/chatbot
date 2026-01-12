@@ -427,6 +427,7 @@ export default function ChatWidget() {
                 placeholder="Message..."
                 disabled={isTyping}
                 className="flex-1 px-4 py-2 text-sm bg-gray-900 text-white rounded-full border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 disabled:opacity-50"
+                aria-label="Message input"
               />
               {(inputValue.trim() && !isTyping) && (
                 <button

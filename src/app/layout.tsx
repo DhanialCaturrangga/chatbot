@@ -46,6 +46,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   robots: { index: true, follow: true },
+  metadataBase: new URL('https://danielcaturrangga.vercel.app'),
 };
 
 export default function RootLayout({
